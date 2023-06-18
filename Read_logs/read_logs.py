@@ -299,18 +299,9 @@ class DlgMain(QDialog):
                                 'Данный лог отсутствует, убедитесь что вы правильно указали путь или запустите стенд, '
                                 'чтобы данный лог появился')
 
-    def change_dir1(self):
-        self.stend1_base_path = QFileDialog.getExistingDirectory()
-        self.stend1_path.setText(self.stend1_base_path)
-
-    def change_dir2(self):
-        self.stend2_base_path = QFileDialog.getExistingDirectory()
-        self.stend2_path.setText(self.stend2_base_path)
-
-    def change_dir3(self):
-        self.stend3_base_path = QFileDialog.getExistingDirectory()
-        self.stend3_path.setText(self.stend3_base_path)
-        self.stend3_name = self.stend3_base_path.split('\\')[-1]
+    def no_such_config(self):
+        QMessageBox.information(self, "Файл конфигурации отсутствует",
+                                'Данный файл конфигурации отсутствует, убедитесь что вы правильно указали путь или запустите стенд')
 
     def stderr_open(self, path):
         print(path)
@@ -344,13 +335,17 @@ class DlgMain(QDialog):
         for file in os.scandir(path+'\\tomcat\\logs'):
             os.remove(file.path)
 
-    @staticmethod
-    def edit_hibernate_properties(path):
-        os.startfile(path+'\\config\\hibernate.properties')
+    def edit_hibernate_properties(self, path):
+        try:
+            os.startfile(path+'\\config\\hibernate.properties')
+        except:
+            self.no_such_config()
 
-    @staticmethod
-    def edit_app_properties(path):
-        os.startfile(path+'\\config\\app.properties')
+    def edit_app_properties(self, path):
+        try:
+            os.startfile(path+'\\config\\app.properties')
+        except:
+            self.no_such_config()
 
     @staticmethod
     def start_stend(stend_name, start_btn, path_field, stop_btn):
