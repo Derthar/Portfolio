@@ -259,113 +259,145 @@ class DlgMain(QDialog):
         # endregion
 
     def catalina_open(self, path):
-        files = os.listdir(path+'\\tomcat\\logs')
-        if files:
-            files = [file for file in files if file.startswith('catalina')]
-            if files:
-                paths = [(path+'\\tomcat\\logs\\'+file) for file in files]
-                os.startfile(max(paths, key=os.path.getctime))
+        def inner():
+            if 'logs' not in os.listdir(path + '\\tomcat'):
+                self.no_log_dir()
             else:
-                self.no_such_log()
-        else:
-            self.empty_warning()
+                files = os.listdir(path + '\\tomcat\\logs')
+                if files:
+                    files = [file for file in files if file.startswith('catalina')]
+                    if files:
+                        paths = [(path + '\\tomcat\\logs\\' + file) for file in files]
+                        os.startfile(max(paths, key=os.path.getctime))
+                    else:
+                        self.no_such_log()
+                else:
+                    self.empty_warning()
+        threading.Thread(target=inner()).start()
 
     def nsisync_open(self, path):
-        files = os.listdir(path+'\\tomcat\\logs')
-        if files:
-            files = [file for file in files if file.startswith('NsiSync')]
-            if files:
-                paths = [(path+'\\tomcat\\logs\\'+file) for file in files]
-                os.startfile(max(paths, key=os.path.getctime))
+        def inner():
+            if 'logs' in os.listdir(path + '\\tomcat'):
+                files = os.listdir(path + '\\tomcat\\logs')
+                if files:
+                    files = [file for file in files if file.startswith('NsiSync')]
+                    if files:
+                        paths = [(path + '\\tomcat\\logs\\' + file) for file in files]
+                        os.startfile(max(paths, key=os.path.getctime))
+                    else:
+                        self.no_such_log()
+                else:
+                    self.empty_warning()
             else:
-                self.no_such_log()
-        else:
-            self.empty_warning()
+                self.no_log_dir()
+        threading.Thread(target=inner()).start()
 
     def log_dir_open(self, path):
-        try:
-            os.startfile(path+'\\tomcat\\logs')
-        except Exception:
-            QMessageBox.information(self, 'Папка с логами не обнаружена',
-                                    'По указанному пути отсуствует папка с логами, проверьте правильность пути')
+        def inner():
+            try:
+                os.startfile(path+'\\tomcat\\logs')
+            except Exception:
+                self.no_log_dir()
+        threading.Thread(target=inner()).start()
+
+    def no_log_dir(self):
+        QMessageBox.information(self, 'Папка с логами не обнаружена',
+                        'По указанному пути отсуствует папка с логами, проверьте правильность пути')
 
     def empty_warning(self):
         QMessageBox.information(self, "Логи отсутствуют",
-                                'Папка с логами пуста, убедитесь что вы правильно указали путь или запустите стенд, '
-                                'чтобы логи появились')
+                                'Папка с логами пуста, убедитесь что вы правильно указали путь или запустите стенд, чтобы логи появились')
 
     def no_such_log(self):
         QMessageBox.information(self, "Лог отсутствуют",
-                                'Данный лог отсутствует, убедитесь что вы правильно указали путь или запустите стенд, '
-                                'чтобы данный лог появился')
+                                'Данный лог отсутствует, убедитесь что вы правильно указали путь или запустите стенд, чтобы данный лог появился')
 
     def no_such_config(self):
         QMessageBox.information(self, "Файл конфигурации отсутствует",
                                 'Данный файл конфигурации отсутствует, убедитесь что вы правильно указали путь или запустите стенд')
 
     def stderr_open(self, path):
-        print(path)
-        name = path.split('\\')[-1].lower()
-        print(name)
-        files = os.listdir(path+'\\tomcat\\logs')
-        if files:
-            files = [file for file in files if file.startswith(name+'-stderr')]
-            if files:
-                paths = [(path+'\\tomcat\\logs\\'+file) for file in files]
-                os.startfile(max(paths, key=os.path.getctime))
+        def inner():
+            if 'logs' in os.listdir(path+'\\tomcat'):
+                name = path.split('\\')[-1].lower()
+                files = os.listdir(path+'\\tomcat\\logs')
+                if files:
+                    files = [file for file in files if file.startswith(name+'-stderr')]
+                    if files:
+                        paths = [(path+'\\tomcat\\logs\\'+file) for file in files]
+                        os.startfile(max(paths, key=os.path.getctime))
+                    else:
+                        self.no_such_log()
+                else:
+                    self.empty_warning()
             else:
-                self.no_such_log()
-        else:
-            self.empty_warning()
+                self.no_log_dir()
+        threading.Thread(target=inner()).start()
 
     def stdout_open(self, name, path):
-        files = os.listdir(path+'\\tomcat\\logs')
-        if files:
-            files = [file for file in files if file.startswith(name.lower()+'-stdout')]
-            if files:
-                paths = [(path+'\\tomcat\\logs\\'+file) for file in files]
-                os.startfile(max(paths, key=os.path.getctime))
+        def inner():
+            if 'logs' in os.listdir(path+'\\tomcat'):
+                files = os.listdir(path+'\\tomcat\\logs')
+                if files:
+                    files = [file for file in files if file.startswith(name.lower()+'-stdout')]
+                    if files:
+                        paths = [(path+'\\tomcat\\logs\\'+file) for file in files]
+                        os.startfile(max(paths, key=os.path.getctime))
+                    else:
+                        self.no_such_log()
+                else:
+                    self.empty_warning()
             else:
-                self.no_such_log()
-        else:
-            self.empty_warning()
+                self.no_log_dir()
+        threading.Thread(target=inner()).start()
 
     @staticmethod
     def clear_logs(path):
-        for file in os.scandir(path+'\\tomcat\\logs'):
-            os.remove(file.path)
+        def inner():
+            if 'logs' in os.listdir(path+'\\tomcat'):
+                for file in os.scandir(path+'\\tomcat\\logs'):
+                    os.remove(file.path)
+        threading.Thread(target=inner()).start()
 
     def edit_hibernate_properties(self, path):
-        try:
-            os.startfile(path+'\\config\\hibernate.properties')
-        except:
-            self.no_such_config()
+        def inner():
+            try:
+                os.startfile(path+'\\config\\hibernate.properties')
+            except:
+                self.no_such_config()
+        threading.Thread(target=inner()).start()
 
     def edit_app_properties(self, path):
-        try:
-            os.startfile(path+'\\config\\app.properties')
-        except:
-            self.no_such_config()
+        def inner():
+            try:
+                os.startfile(path+'\\config\\app.properties')
+            except:
+                self.no_such_config()
+        threading.Thread(target=inner()).start()
 
     @staticmethod
     def start_stend(stend_name, start_btn, path_field, stop_btn):
-        if win32serviceutil.QueryServiceStatus(stend_name)[1] == 4:
-            pass
-        else:
-            win32serviceutil.StartService(stend_name)
-            start_btn.setDisabled(True)
-            path_field.setStyleSheet("background:lightgreen;")
-            stop_btn.setDisabled(False)
+        def inner():
+            if win32serviceutil.QueryServiceStatus(stend_name)[1] == 4:
+                pass
+            else:
+                win32serviceutil.StartService(stend_name)
+                start_btn.setDisabled(True)
+                path_field.setStyleSheet("background:lightgreen;")
+                stop_btn.setDisabled(False)
+        threading.Thread(target=inner()).start()
 
     @staticmethod
     def stop_stend(stend_name, start_btn, path_field, stop_btn):
-        if win32serviceutil.QueryServiceStatus(stend_name)[1] == 4:
-            win32serviceutil.StopService(stend_name)
-            start_btn.setDisabled(False)
-            path_field.setStyleSheet("background:pink;")
-            stop_btn.setDisabled(True)
-        else:
-            pass
+        def inner():
+            if win32serviceutil.QueryServiceStatus(stend_name)[1] == 4:
+                win32serviceutil.StopService(stend_name)
+                start_btn.setDisabled(False)
+                path_field.setStyleSheet("background:pink;")
+                stop_btn.setDisabled(True)
+            else:
+                pass
+        threading.Thread(target=inner()).start()
 
     @staticmethod
     def check_service(stend_name, stend_path, stend_start_btn, stend_stop_btn):
