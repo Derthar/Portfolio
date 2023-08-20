@@ -335,8 +335,7 @@ def main():
                     case '1':
                         print(colorama.Fore.LIGHTBLUE_EX, 'Введите номер записи')
                         a3: int = int(input())
-                        print(colorama.Fore.LIGHTYELLOW_EX,
-                              lst.search_record_by_number(value=a3).__str__())
+                        lst.search_record_by_number(value=a3).__str__()
 
                     # Поиск по текстовому полю
                     case '2':
