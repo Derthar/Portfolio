@@ -1,4 +1,4 @@
-# Hi! I'm Marcel 👋
+# Hi! I'm Marsel 
 
 **QA Engineer | Python | Test Automation**
 
