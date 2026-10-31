@@ -71,6 +71,6 @@ Some of my projects are not publicly available, but they represent additional ar
 
 ## 📫 Contact
 
-- **LinkedIn:** [Your LinkedIn profile]
-- **Email:** [Your email]
+- **LinkedIn:** https://www.linkedin.com/in/marsel-gafarov-91768626b/
+- **Email:** dertgar159@gmail.com
 - **GitHub:** [@Derthar](https://github.com/Derthar)
